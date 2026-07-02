@@ -20,7 +20,7 @@ class Kodo < Formula
   # bumpear package.json a la misma versión y computar el sha256 del tarball.
   # El sha256 NO se puede conocer hasta que exista la release. (package.json ya en 0.15.0.)
   url "https://github.com/kintsugi-lab-sca/kodo/archive/refs/tags/v0.15.1.tar.gz"
-  sha256 "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5" # TODO(spike 66-04): sha256 real del tarball de la release
+  sha256 "a9f7153131765f0554e243d379fb0e51a071663ec64368dbe68c4e999e6e2f08" # TODO(spike 66-04): sha256 real del tarball de la release
   license "MIT"
 
   # depends_on node (satisface engines ">=20" de package.json). NO se bundlea el
