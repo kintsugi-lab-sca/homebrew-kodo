@@ -17,12 +17,18 @@
 class Kodo < Formula
   desc "Automated Claude Code sessions from task-management systems"
   homepage "https://github.com/kintsugi-lab-sca/kodo"
-  url "https://github.com/kintsugi-lab-sca/kodo/archive/refs/tags/v0.21.0.tar.gz"
-  sha256 "d8d6b60fc839247d908aa983d723547d1aa0309fb4bd3ccbc1dc015ad0365cfd"
+  url "https://github.com/kintsugi-lab-sca/kodo/archive/refs/tags/v0.22.0.tar.gz"
+  sha256 "a8020ada2deec498fd1cbe4a61363103aed9365c157d0a23f132fc5a61d03a7f"
   license "MIT"
 
-  # Node satisfies package.json's ">=20" engines. The runtime is NOT bundled: it is a
+  # Node satisfies package.json's ">=22" engines. The runtime is NOT bundled: it is a
   # system dependency, not an embedded binary (D-05).
+  #
+  # KODO-65 caveat: the `node` formula tracks the newest release line, so a `brew install`
+  # can hand kodo a Node newer than the CI matrix (22 and 24). Left unpinned on purpose —
+  # `engines` is open-ended and pinning `node@24` here would drag the service block's
+  # `formula_opt_bin("node")` with it. If a Node-version regression ever ships through the
+  # brew route, pin BOTH together.
   depends_on "node"
 
   def install
@@ -77,6 +83,10 @@ class Kodo < Formula
     # ~/Library/LaunchAgents (PERSIST-04 / T-66-08 boundary).
   end
 
+  # KODO-61: the caveats do NOT claim kodo is macOS-only — the daemon runs on Linux too.
+  # What is macOS-specific is THIS route: launchd, the plist, and cmux as a client. The
+  # supported Linux route is npm + a systemd user unit (packaging/linux/README.md), so the
+  # last paragraph names it instead of leaving a Linuxbrew user to guess.
   def caveats
     <<~EOS
       Under `brew services`, kodo runs in SERVER-ONLY mode (webhook + polling): it reacts
@@ -89,6 +99,13 @@ class Kodo < Formula
 
       Secrets are read from ~/.kodo/.env (never from the plist). Config: `kodo config` or `kodo up`
       (dashboard setup, coming soon).
+
+      On Linux: this formula is not the supported route and has not been verified under
+      Linuxbrew (launchd and the plist above are macOS; cmux does not ship for Linux, the
+      client there is Orca). Install with npm and run it as a systemd user unit instead:
+        npm install -g github:kintsugi-lab-sca/kodo#v#{version}
+        kodo install --systemd
+      Guide: https://github.com/kintsugi-lab-sca/kodo/blob/main/packaging/linux/README.md
     EOS
   end
 
